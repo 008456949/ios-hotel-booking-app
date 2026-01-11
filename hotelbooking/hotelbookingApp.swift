@@ -7,11 +7,14 @@
 
 import SwiftUI
 
-@main
-struct hotelbookingApp: App {
-    var body: some Scene {
-        WindowGroup {
-            ContentView()
-        }
+// This file previously declared a second @main App type, which caused a build error.
+// Keep a shim or remove entirely. Here we keep a harmless placeholder to avoid duplicate @main.
+struct HotelbookingAppShim: View {
+    var body: some View {
+        ContentView()
     }
+}
+
+#Preview {
+    HotelbookingAppShim()
 }
