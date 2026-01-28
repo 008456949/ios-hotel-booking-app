@@ -10,6 +10,8 @@ import SwiftUI
 
 struct HotelsListView: View {
     @StateObject private var vm = HotelsListViewModel()
+    @ObservedObject private var favoritesManager = FavoritesManager.shared
+    @State private var showFavoritesOnly = false
 
     var body: some View {
         NavigationStack {
@@ -24,6 +26,9 @@ struct HotelsListView: View {
                 .onChange(of: vm.selectedCity) { _, _ in
                     Task { await vm.load() }
                 }
+                
+                Toggle("Show Favorites Only", isOn: $showFavoritesOnly)
+                    .padding(.horizontal)
 
                 if vm.isLoading {
                     ProgressView("Loading…")
@@ -38,14 +43,21 @@ struct HotelsListView: View {
                     .padding()
                     Spacer()
                 } else {
-                    List(vm.hotels.indices, id: \.self) { index in
-                        let hotel = vm.hotels[index]
+                    List(filteredHotels.indices, id: \.self) { index in
+                        let hotel = filteredHotels[index]
                         NavigationLink {
                             HotelDetailView(hotel: hotel)
                         } label: {
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(hotel.name).font(.headline).lineLimit(2)
-                                Text(hotel.priceText).foregroundStyle(.secondary)
+                            HStack {
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(hotel.name).font(.headline).lineLimit(2)
+                                    Text(hotel.priceText).foregroundStyle(.secondary)
+                                }
+                                Spacer()
+                                if favoritesManager.isFavorite(hotel.id) {
+                                    Image(systemName: "heart.fill")
+                                        .foregroundStyle(.red)
+                                }
                             }
                             .padding(.vertical, 6)
                         }
@@ -57,6 +69,14 @@ struct HotelsListView: View {
         }
         .task {
             await vm.load()
+        }
+    }
+    
+    private var filteredHotels: [Hotel] {
+        if showFavoritesOnly {
+            return vm.hotels.filter { favoritesManager.isFavorite($0.id) }
+        } else {
+            return vm.hotels
         }
     }
 }
