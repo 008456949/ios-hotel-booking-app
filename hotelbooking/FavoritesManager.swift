@@ -16,7 +16,7 @@ final class FavoritesManager: ObservableObject {
     
     static let shared = FavoritesManager()
     
-    init() {
+    private init() {
         loadFavorites()
     }
     

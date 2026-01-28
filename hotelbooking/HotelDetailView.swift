@@ -10,9 +10,11 @@ import SwiftUI
 
 struct HotelDetailView: View {
     let hotel: Hotel
-    @StateObject private var favoritesManager = FavoritesManager.shared
+    @ObservedObject private var favoritesManager = FavoritesManager.shared
 
     var body: some View {
+        let isFavorite = favoritesManager.isFavorite(hotel.id)
+        
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
 
@@ -44,13 +46,13 @@ struct HotelDetailView: View {
                     favoritesManager.toggleFavorite(hotel.id)
                 }) {
                     HStack {
-                        Image(systemName: favoritesManager.isFavorite(hotel.id) ? "heart.fill" : "heart")
-                        Text(favoritesManager.isFavorite(hotel.id) ? "Remove from Favorites" : "Add to Favorites")
+                        Image(systemName: isFavorite ? "heart.fill" : "heart")
+                        Text(isFavorite ? "Remove from Favorites" : "Add to Favorites")
                     }
                     .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
-                .tint(favoritesManager.isFavorite(hotel.id) ? .red : .blue)
+                .tint(isFavorite ? .red : .blue)
                 .padding(.horizontal)
 
                 if hotel.coordinate != nil {

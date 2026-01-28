@@ -10,7 +10,7 @@ import SwiftUI
 
 struct HotelsListView: View {
     @StateObject private var vm = HotelsListViewModel()
-    @StateObject private var favoritesManager = FavoritesManager.shared
+    @ObservedObject private var favoritesManager = FavoritesManager.shared
     @State private var showFavoritesOnly = false
 
     var body: some View {
